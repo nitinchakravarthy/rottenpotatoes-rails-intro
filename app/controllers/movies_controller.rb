@@ -11,10 +11,19 @@ class MoviesController < ApplicationController
   end
 
   def index
-    puts("inside index")
-    @all_ratings = ['G','PG','PG-13','R']
-    @ratings = params[:ratings] ||{}
-    puts("ratings: " + @ratings.to_s())
+    if (params[:sort].nil?)
+     params[:sort] = session[:sort] || {}
+    end
+    
+    if (params[:ratings].nil?)
+      params[:ratings] = session[:ratings] || {}
+    end
+    
+    #puts("inside index")
+    @all_ratings = Movie.distinct.pluck(:rating)
+    @ratings = params[:ratings] || {}  # if ratings are not passed
+    #puts("ratings: " + @ratings.to_s())
+    
     if params[:sort] == "title" 
       @movies = Movie.with_ratings(@ratings).order(:title)
     elsif params[:sort] == "date"
@@ -22,7 +31,12 @@ class MoviesController < ApplicationController
     else
       @movies = Movie.with_ratings(@ratings)
     end
-    puts("the ratings are: " + @ratings.to_s())
+    
+    #puts("the ratings are: " + @ratings.to_s())
+    # put settings in session
+     session[:sort] = params[:sort]
+     session[:ratings] = params[:ratings]
+     puts(session[:ratings])
   end
 
   def new
@@ -52,20 +66,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-  
-  # def title_sort
-  #   puts("reached title_sort")
-  #   @movies = (Movie.all).sort_by {|movie| movie.title}
-  #   puts(@movies[0].title)
-  #   render :action => 'index'
-  # end
-  
-  # def releasedate_sort
-  #   puts("reached releasedate sort")
-  #   @movies = (Movie.all).sort_by {|movie| movie.release_date}
-  #   puts(@movies[0].title)
-  #   render :action => 'index'
-  # end
-  
 
 end
