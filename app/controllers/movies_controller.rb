@@ -19,10 +19,10 @@ class MoviesController < ApplicationController
       params[:ratings] = session[:ratings] || {}
     end
     
-    #puts("inside index")
+    puts("inside index")
     @all_ratings = Movie.distinct.pluck(:rating)
     @ratings = params[:ratings] || {}  # if ratings are not passed
-    #puts("ratings: " + @ratings.to_s())
+    puts("ratings: " + @ratings.to_s())
     
     if params[:sort] == "title" 
       @movies = Movie.with_ratings(@ratings).order(:title)
@@ -32,7 +32,7 @@ class MoviesController < ApplicationController
       @movies = Movie.with_ratings(@ratings)
     end
     
-    #puts("the ratings are: " + @ratings.to_s())
+    puts("the ratings are: " + @ratings.to_s())
     # put settings in session
      session[:sort] = params[:sort]
      session[:ratings] = params[:ratings]
