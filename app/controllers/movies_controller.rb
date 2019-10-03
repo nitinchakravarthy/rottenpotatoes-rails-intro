@@ -11,15 +11,18 @@ class MoviesController < ApplicationController
   end
 
   def index
-    puts(params)
+    puts("inside index")
     @all_ratings = ['G','PG','PG-13','R']
-    if params[:sort] == "title"
-      @movies = Movie.order(:title)
+    @ratings = params[:ratings] ||{}
+    puts("ratings: " + @ratings.to_s())
+    if params[:sort] == "title" 
+      @movies = Movie.with_ratings(@ratings).order(:title)
     elsif params[:sort] == "date"
-      @movies = Movie.order(:release_date)
+      @movies = Movie.with_ratings(@ratings).order(:release_date)
     else
-      @movies = Movie.all
+      @movies = Movie.with_ratings(@ratings)
     end
+    puts("the ratings are: " + @ratings.to_s())
   end
 
   def new
